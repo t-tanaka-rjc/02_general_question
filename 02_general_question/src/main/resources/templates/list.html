@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<!--	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+        上記はログインしている人だけにボタンを見せるという制御文-->
+	
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<link th:href="@{/css/common.css}" rel="stylesheet">
+		<title>list</title>
+	</head>
+	<body>
+		<div id="wapper">
+			<div class="menu">
+				<a th:href="@{../}">メニュー</a><br>
+			</div>
+			<div class="menu">
+				<h2>メンバ一覧画面</h2>
+			</div>
+			<table class="list">
+				<thead>
+<!--			下記のcolは縦の列（Column）の見出し、ちなみにrowは横の行の見出し-->
+					<tr>
+						<th scope="col">社員ID</th>
+						<th scope="col">氏名</th>
+						<th scope="col">年齢</th>
+						<th scope="col">性別</th>
+						<th scope="col">住所</th>
+						<th scope="col">電話番号</th>
+						<th scope="col">メールアドレス</th>
+						<th scope="col">役職</th>
+						<th scope="col">事業所</th>
+						<th scope="col">詳細</th>
+						<th scope="col">更新</th>
+						<th scope="col">削除</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="member : ${members}" th:object="${member}">
+						<td th:text = "*{memberId}"></td>
+						<td th:text = "*{memberName}"></td>
+						<td th:text = "*{age}"></td>
+						<td th:text = "*{sex}"></td>
+						<td th:text = "*{address}"></td>
+						<td th:text = "*{tel}"></td>
+						<td th:text = "*{mail}"></td>
+						<td th:text = "*{positionName}"></td>
+						<td th:text = "*{placeName}"></td>
+						<td>
+						    <a th:href="@{/show/{id}(id=*{memberId})}" class="btn-link">詳細</a>
+						</td>
+
+						<td>
+						    <a th:href="@{/update/{id}(id=*{memberId})}" class="btn-link">更新</a>
+						</td>
+
+						<td>
+						    <form method="post" th:action="@{/delete}" style="display:inline">
+						        <input type="hidden" name="id" th:value="*{memberId}" />
+						        <input type="submit" class="btn-delete" onclick="return confirmDeleteAlert()" value="削除" />
+						    </form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>
