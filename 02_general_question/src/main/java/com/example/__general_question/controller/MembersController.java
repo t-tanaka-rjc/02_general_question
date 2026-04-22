@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.__general_question.dto.MemberDto;
-import com.example.__general_question.entity.Place;
-import com.example.__general_question.entity.Position;
 import com.example.__general_question.form.MemberForm;
 import com.example.__general_question.helper.AttributeMessageHelper;
 import com.example.__general_question.service.MembersService;
@@ -90,15 +88,10 @@ public class MembersController {
 	 * @return 登録確認画面を返す
 	 */
 	@PostMapping("/insertConf")
-	private String errorCheck(@Valid @ModelAttribute("member") MemberForm form, BindingResult result,
+	private String insertErrorCheck(@Valid @ModelAttribute("member") MemberForm form, BindingResult result,
 			RedirectAttributes redirAttrs, Model model) {
 		//画面入力時にエラーがある場合は処理を中断して登録画面を再表示する
 		if (result.hasErrors()) {
-			System.out.println("--- バリデーションエラーが発生しました ---");
-		    result.getFieldErrors().forEach(e -> {
-		        System.out.println("項目名: " + e.getField());
-		        System.out.println("エラー内容: " + e.getDefaultMessage());
-		    });
 			model.addAttribute("positions", positionsService.getAll());
 			//事業所テーブルのデータ一覧（Idと名前のみ）取得しセレクトボックスに表示
 			model.addAttribute("places", placesService.getAll());
@@ -107,23 +100,12 @@ public class MembersController {
 		
 		//確認画面ではpositionIdに紐づくpositionNameを表示する
 		try {
-			//form.getPositionId()（役職を未選択（Null））の場合は
-			//新入社員という文字列を画面にmodelで渡す
-			//<option value="">はNullではなく空文字らしい
-			if (form.getPositionId() == null || form.getPositionId().isEmpty()) {
-				model.addAttribute("positionName", "新入社員");
-			} else {
-				Position position = positionsService.getById(form.getPositionId());
-				model.addAttribute("positionName", position.getPositionName());
-			}
+			//画面表示用の役職名をサービスクラスから取得してFormクラスのフィールドにセットする
+			//そうすることで違うキー名と役職名を紐づけて画面に渡さなくても、FormクラスのpositionNameフィールドに
+			//代入することで上記のmemberキーで呼び出せる
+			form.setPositionName(positionsService.getPositionName(form.getPositionId()));
 			
-			if (form.getPlaceId() == null || form.getPlaceId().isEmpty()) {
-				model.addAttribute("placeName", "未所属");
-			} else {
-				Place place = placesService.getById(form.getPlaceId());
-				model.addAttribute("placeName", place.getPlaceName());
-			}
-			
+			form.setPlaceName(placesService.getPlaceName(form.getPlaceId()));
 		} catch (NotFoundException e) {
 			redirAttrs.addFlashAttribute("error", attributeMessageHelper.getPropertieMessage("dataMissingError"));
 
@@ -141,42 +123,32 @@ public class MembersController {
 	 * @return 登録完了画面を返す（リダイレクト）
 	 */
 	@PostMapping("/insertComp")
-	private String add(@ModelAttribute("member") MemberForm form, RedirectAttributes redirAttrs) {
+	private String addInsert(@ModelAttribute("member") MemberForm form, RedirectAttributes redirAttrs) {
 		//FormからDtoに変換する
 		MemberDto dto = MemberDto.convertFormToDto(form);
 		
 		//メンバー登録処理を行う
 		membersService.insert(dto);
 		
-		//確認完了画面に登録値（入力値）のデータを渡す
-		redirAttrs.addFlashAttribute("member", form);
 		
-		//完了画面でもpositionIdに紐づくpositionNameを表示する
+		
 		try {
-			//form.getPositionId()（役職を未選択（Null））の場合は
-			//新入社員という文字列を画面に渡す
+	
+			form.setPositionName(positionsService.getPositionName(form.getPositionId()));
+			
+			form.setPlaceName(placesService.getPlaceName(form.getPlaceId()));
 			//リダイレクトの場合は指定したURLでアクセスしなおすからModelではデータの保持はできない
 			//レスポンスを返したらModelの中身は消えるから
-			if (form.getPositionId() == null || form.getPositionId().isEmpty()) {
-				redirAttrs.addFlashAttribute("positionName", "新入社員");
-			} else {
-				Position position = positionsService.getById(form.getPositionId());
-				redirAttrs.addFlashAttribute("positionName", position.getPositionName());
-			}
-			
-			if (form.getPlaceId() == null || form.getPlaceId().isEmpty()) {
-				redirAttrs.addFlashAttribute("placeName", "未所属");
-			} else {
-				Place place = placesService.getById(form.getPlaceId());
-				redirAttrs.addFlashAttribute("placeName", place.getPlaceName());
-			}
+			//確認完了画面に登録値（入力値）のデータを渡す
+			redirAttrs.addFlashAttribute("member", form);
 			
 		} catch (NotFoundException e) {
+			
 			redirAttrs.addFlashAttribute("error", attributeMessageHelper.getPropertieMessage("dataMissingError"));
 
 			//リダイレクトは指定したURLでアクセスしなおすから、登録画面のメソッドが呼ばれる
 			return "redirect:/insert";
-		}		
+		}
 		
 		//登録処理の後に画面を表示する場合は、必ずリダイレクト
 		return "redirect:/insertComp";
@@ -215,7 +187,7 @@ public class MembersController {
 	}
 	
 	/**
-	 * 更新画面 まだ途中
+	 * 更新画面
 	 * 
 	 * @return 更新画面を返す
 	 */
@@ -232,6 +204,92 @@ public class MembersController {
 		}
 		
 		model.addAttribute("member", memberDto);
+		
+		//役職テーブルのデータ一覧（Idと名前のみ）取得しセレクトボックスに表示
+		model.addAttribute("positions", positionsService.getAll());
+		//事業所テーブルのデータ一覧（Idと名前のみ）取得しセレクトボックスに表示
+		model.addAttribute("places", placesService.getAll());
+		
 		return"update";
 	}
+	
+	/**
+	 * 入力値確認(更新画面)
+	 * 
+	 * @return 更新確認画面を返す
+	 */
+	@PostMapping("/updateConf")
+	private String updateErrorCheck(@Valid @ModelAttribute("member") MemberForm form, BindingResult result,
+			RedirectAttributes redirAttrs, Model model) {
+		//画面入力時にエラーがある場合は処理を中断して登録画面を再表示する
+		if (result.hasErrors()) {
+			model.addAttribute("positions", positionsService.getAll());
+			//事業所テーブルのデータ一覧（Idと名前のみ）取得しセレクトボックスに表示
+			model.addAttribute("places", placesService.getAll());
+			return "update";
+		}
+		
+		try {
+			
+			form.setPositionName(positionsService.getPositionName(form.getPositionId()));
+			
+			form.setPlaceName(placesService.getPlaceName(form.getPlaceId()));
+		} catch (NotFoundException e) {
+			redirAttrs.addFlashAttribute("error", attributeMessageHelper.getPropertieMessage("dataMissingError"));
+
+			//リダイレクトは指定したURLでアクセスしなおすから、登録画面のメソッドが呼ばれる
+			return "redirect:/insert";
+		}
+		
+		return "updateConf";
+		
+	}
+
+	/**
+	 * 更新処理
+	 * 
+	 * @return 更新完了画面を返す（リダイレクト）
+	 */
+	@PostMapping("/updateComp")
+	private String addUpdate(@ModelAttribute("member") MemberForm form, RedirectAttributes redirAttrs) {
+		//FormからDtoに変換する
+		MemberDto dto = MemberDto.convertFormToDto(form);
+		
+		//メンバー登録処理を行う
+		membersService.insert(dto);
+		
+		try {
+			
+			form.setPositionName(positionsService.getPositionName(form.getPositionId()));
+			
+			form.setPlaceName(placesService.getPlaceName(form.getPlaceId()));
+
+			//リダイレクトの場合は指定したURLでアクセスしなおすからModelではデータの保持はできない
+			//レスポンスを返したらModelの中身は消えるから
+			//確認完了画面に登録値（入力値）のデータを渡す
+			redirAttrs.addFlashAttribute("member", form);
+		} catch (NotFoundException e) {
+			
+			redirAttrs.addFlashAttribute("error", attributeMessageHelper.getPropertieMessage("dataMissingError"));
+
+			//リダイレクトは指定したURLでアクセスしなおすから、登録画面のメソッドが呼ばれる
+			return "redirect:/insert";
+		}
+		
+		
+		
+		//登録処理の後に画面を表示する場合は、必ずリダイレクト
+		return "redirect:/insertComp";
+	}
+	
+	/**
+	 * 更新完了画面
+	 * 
+	 * @return 登録完了画面を返す
+	 */
+//	@GetMapping("/insertComp")
+//	private String insertComp() {
+//		//登録処理メソッド内で、完了画面に表示するデータをもらっているからなにもしなくていい
+//		return "insertComp";
+//	}
 }

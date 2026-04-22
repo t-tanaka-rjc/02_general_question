@@ -45,4 +45,19 @@ public class PlacesService {
 			return place.get();
 		}
 	} 
+	
+	/**
+	 * 入力値（事業所Id）に紐づく事業所名を取得する。IDがNull、または空文字の場合は空文字を返す。
+	 */
+	public String getPlaceName(String id) throws NotFoundException {
+		
+		//IdがNullまたは空文字の場合は空文字を返す
+		if (id == null || id.isEmpty()) {
+	        return ""; 
+	    }
+		
+		// try-catchを書かなくても、getById自体がthrows宣言しているので、
+	    // 例外発生時はControllerに例外が飛ぶ
+	    return getById(id).getPlaceName();
+	}
 }

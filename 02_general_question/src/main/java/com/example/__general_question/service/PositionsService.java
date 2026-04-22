@@ -36,12 +36,26 @@ public class PositionsService {
 		
 		//memberを対象にOptional型のisEmptyメソッドを実行し、
 		//値がなければ(true)例外をスロー、ある場合はgetメソッドを実行し値を取得
-		//値をDtoクラスに変換する
 		if (position.isEmpty()) {
 			throw new NotFoundException();
 		} else {
 			//getメソッドの返り値はEntityクラス
 			return position.get();
 		}
-	} 
+	}
+	
+	/**
+	 * 入力値（役職Id）に紐づく役職名を取得する。IDがNull、または空文字の場合は空文字を返す。
+	 */
+	public String getPositionName(String id) throws NotFoundException {
+		
+		//IdがNullまたは空文字の場合は空文字を返す
+		if (id == null || id.isEmpty()) {
+	        return ""; 
+	    }
+		
+		// try-catchを書かなくても、getById自体がthrows宣言しているので、
+	    // 例外発生時はControllerに例外が飛ぶ
+	    return getById(id).getPositionName();
+	}
 }
