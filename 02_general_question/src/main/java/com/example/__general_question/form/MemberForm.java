@@ -1,22 +1,48 @@
-package com.example.__general_question.dto;
+package com.example.__general_question.form;
 
-import com.example.__general_question.entity.Member;
-import com.example.__general_question.form.MemberForm;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
-public class MemberDto {
+import org.hibernate.validator.constraints.Length;
+
+/**
+ * @author towa_tanaka
+ */
+public class MemberForm {
 	/** ID */
+	@NotBlank
+	@Pattern(regexp = "^[a-zA-Z0-9]{1,10}$")
 	private String memberId;
-	/** 名前 */
+	/** 
+	 * 名前 
+	 * 空白はOK 
+	 */
+	@NotEmpty
+	@Length(max = 20)
 	private String memberName;
 	/** 年齢 */
+	@NotNull
+	@Min(0)
+	@Max(150)
 	private Integer age;
 	/** 住所 */
+	@NotEmpty
+	@Length(max = 50)
 	private String address;
 	/** 性別 */
+	@NotNull
 	private Integer sex;
 	/** mail */
+	@NotBlank
+	@Pattern(regexp = "^[a-zA-Z0-9.@\\-_]{1,30}$")
 	private String mail;
 	/** 電話番号 */
+	@NotBlank
+	@Pattern(regexp = "^[0-9]{1,11}$")
 	private String tel;
 	/** 役職id */
 	private String positionId;
@@ -181,92 +207,5 @@ public class MemberDto {
 	public void setPlaceName(String placeName) {
 	    this.placeName = placeName;
 	}
-
-	/**
-	 * MemberFormをMemberDtoに変換する
-	 * 
-	 * @param form 変換元
-	 * @return MemberDto
-	 */
-	public static final MemberDto convertFormToDto(MemberForm form) {
-		MemberDto memberDto = new MemberDto();
-		
-		memberDto.setMemberId(form.getMemberId());
-		memberDto.setMemberName(form.getMemberName());
-		memberDto.setAge(form.getAge());
-		memberDto.setAddress(form.getAddress());
-		memberDto.setSex(form.getSex());
-		memberDto.setMail(form.getMail());
-		memberDto.setTel(form.getTel());
-		memberDto.setPositionId(form.getPositionId());
-		memberDto.setPlaceId(form.getPlaceId());
-		//下記の登録日や更新日はDBが保存した瞬間に時刻を自動で刻んでくれるから
-		//登録時にセットする必要はない（CURRENT_TIMESTAMPが付与されているから）
-		//memberDto.setRegist(member.getRegist());
-		
-		return memberDto;
-	}
 	
-	/**
-	 * MemberDtoをMember(Entity)に変換する
-	 * 
-	 * @param dto 変換元
-	 * @return Member
-	 */
-	public static final Member convertDtoToEntity(MemberDto dto) {
-		Member member = new Member();
-		
-		member.setMemberId(dto.getMemberId());
-		member.setMemberName(dto.getMemberName());
-		member.setAge(dto.getAge());
-		member.setAddress(dto.getAddress());
-		member.setSex(dto.getSex());
-		member.setMail(dto.getMail());
-		member.setTel(dto.getTel());
-		member.setPositionId(dto.getPositionId());
-		member.setPlaceId(dto.getPlaceId());
-		//下記の登録日や更新日はDBが保存した瞬間に時刻を自動で刻んでくれるから
-		//登録時にセットする必要はない（CURRENT_TIMESTAMPが付与されているから）
-		//memberDto.setRegist(member.getRegist());
-		
-		return member;
-	}
-	
-	/**
-	 * Member(Entity)をMemberDtoに変換する
-	 * 
-	 * @param member 変換元
-	 * @return MemberDto
-	 */
-	public static final MemberDto convertEntityToDto(Member member) {
-		MemberDto memberDto = new MemberDto();
-		
-		memberDto.setMemberId(member.getMemberId());
-		memberDto.setMemberName(member.getMemberName());
-		memberDto.setAge(member.getAge());
-		memberDto.setAddress(member.getAddress());
-		memberDto.setSex(member.getSex());
-		memberDto.setMail(member.getMail());
-		memberDto.setTel(member.getTel());
-		memberDto.setPositionId(member.getPositionId());
-		//設計では新入社員は役職IDや事業所IDは付与しない。
-		//Memberクラス内のPositionクラスのインスタンスを取得するgetPosition()は
-		//positionIDを比較して取得するからそもそもIDが存在しなければNullになる。
-		//member.getPosition()がNullの場合は取得せずに、新入社員という文字列をpositionNameにセットする
-		if (member.getPosition() != null) {
-			memberDto.setPositionName(member.getPosition().getPositionName());
-		} else {
-			memberDto.setPositionName("新入社員");
-		}
-		
-		memberDto.setPlaceId(member.getPlaceId());
-		
-		if (member.getPlace() != null) {
-			memberDto.setPlaceName(member.getPlace().getPlaceName());
-		} else {
-			memberDto.setPlaceName("未所属");
-		}
-		
-		return memberDto;
-	}
 }

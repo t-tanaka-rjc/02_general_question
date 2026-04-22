@@ -2,8 +2,6 @@ package com.example.__general_question.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -21,13 +19,19 @@ public class Place {
 
 	//ID
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "place_id")
-	private String PlaceId;
+	private String placeId;
 	
 	//事業所名
 	@Column(name = "place_name")
 	private String placeName;
+	
+	/**
+     * IDを取得するGetter
+     */
+    public String getPlaceId() {
+        return placeId;
+    }
 	
 	//事業所Entityクラスに変換することはないためSetterは定義しない
 	/**

@@ -18,6 +18,9 @@ public class MembersService {
 	@Autowired
 	private MembersRepository membersRepository;
 	
+	/** 
+	 * @return メンバテーブルの情報を全件返す
+	 */
 	public List<MemberDto> getAll() {
 		// 下記のメソッドはテーブルのデータを全件List型で受け取れる（SELECT分を発行）
 		//指定していないので並び順がバラバラかも
@@ -32,6 +35,13 @@ public class MembersService {
 		return memberDtoList;
 	}
 
+	/**
+	 * メンバーIDに紐づくメンバ情報を表示。詳細画面で使用
+	 * 
+	 * @param id memberId
+	 * @return Dtoに変換したメンバ一覧情報を返す
+	 * @throws NotFoundException
+	 */
 	public MemberDto getById(String id) throws NotFoundException {
 		Optional<Member> member = membersRepository.findById(id);
 		
@@ -44,6 +54,19 @@ public class MembersService {
 			//getメソッドの返り値はEntityクラス
 			return MemberDto.convertEntityToDto(member.get());
 		}
+	}
+
+	/**
+	 * データをDBに登録
+	 * 
+	 * @param dto FormクラスからDtoクラスに変換された入力値
+	 * @return 
+	 */
+	public Member insert(MemberDto dto) {
+
+		Member member = MemberDto.convertDtoToEntity(dto);
+		
+		return membersRepository.save(member);
 	}
 
 }

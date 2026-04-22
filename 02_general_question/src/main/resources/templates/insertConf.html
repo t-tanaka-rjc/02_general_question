@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">tml>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<link th:href="@{/css/common.css}" rel="stylesheet">
+		<title>新規登録確認</title>
+	</head>
+	<body>
+		<div id="wapper">
+			<div class="menu">
+				<a th:href="@{../}">メニュー</a><br>
+			</div>
+			<div class="menu">
+				<h2>新規登録&nbsp;確認画面</h2>
+				<p>以下のデータを登録します&nbsp;よろしいですか</p>
+			</div>
+			<form th:action="@{/insertComp}" method="post" th:object="${member}">
+<!--				再度データをJavaに送るにはhidden（隠しフィールド）でデータを保持する-->
+				<input type="hidden" th:field="*{memberId}">
+			    <input type="hidden" th:field="*{memberName}">
+			    <input type="hidden" th:field="*{age}">
+			    <input type="hidden" th:field="*{sex}">
+			    <input type="hidden" th:field="*{address}">
+			    <input type="hidden" th:field="*{tel}">
+			    <input type="hidden" th:field="*{mail}">
+			    <input type="hidden" th:field="*{positionId}">
+			    <input type="hidden" th:field="*{placeId}">
+				
+				<table>
+					<tr>
+						<th>社員ID</th>
+						<td th:text="*{memberId}"></td>
+					</tr>
+					<tr>
+						<th>氏名</th>
+						<td th:text="*{memberName}"></td>
+					</tr>
+					<tr>
+						<th>年齢</th>
+						<td th:text="*{age}"></td>
+					</tr>
+					<tr>
+						<th>性別</th>
+						<td th:text="*{sex}"></td>
+					</tr>
+					<tr>
+						<th>住所</th>
+						<td th:text="*{address}"></td>
+					</tr>
+					<tr>
+						<th>電話番号</th>
+						<td th:text="*{tel}"></td>
+					</tr>
+					<tr>
+						<th>メールアドレス</th>
+						<td th:text="*{mail}"></td>
+					</tr>
+					<tr>
+						<th>役職</th>
+						<td th:text="${positionName}"></td>
+					</tr>
+					<tr>
+						<th>事業所</th>
+						<td th:text="${placeName}"></td>
+					</tr>
+				</table>
+				<div class="menu">
+					<button type="submit">登録</button>
+					&nbsp;&nbsp;&nbsp;&nbsp
+					<a th:href="@{/insert}">戻る</a>
+				</form>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>
