@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.__general_question.config.Const;
 import com.example.__general_question.dto.MemberDto;
 import com.example.__general_question.entity.Member;
 import com.example.__general_question.repository.MembersRepository;
@@ -18,6 +19,9 @@ public class MembersService {
 	@Autowired
 	private MembersRepository membersRepository;
 	
+	/** 
+	 * @return メンバテーブルの情報を全件返す
+	 */
 	public List<MemberDto> getAll() {
 		// 下記のメソッドはテーブルのデータを全件List型で受け取れる（SELECT分を発行）
 		//指定していないので並び順がバラバラかも
@@ -32,6 +36,13 @@ public class MembersService {
 		return memberDtoList;
 	}
 
+	/**
+	 * メンバーIDに紐づくメンバ情報を表示。詳細画面で使用
+	 * 
+	 * @param id memberId
+	 * @return Dtoに変換したメンバ一覧情報を返す
+	 * @throws NotFoundException
+	 */
 	public MemberDto getById(String id) throws NotFoundException {
 		Optional<Member> member = membersRepository.findById(id);
 		
@@ -44,6 +55,46 @@ public class MembersService {
 			//getメソッドの返り値はEntityクラス
 			return MemberDto.convertEntityToDto(member.get());
 		}
+	}
+
+	/**
+	 * データをDBに登録・登録
+	 * 
+	 * @param dto FormクラスからDtoクラスに変換された入力値
+	 * @return 
+	 */
+	public Member insert(MemberDto dto) {
+
+		Member member = MemberDto.convertDtoToEntity(dto);
+		
+		member.setDeleteFlg(Const.DELETE_FLG_NOT_DELETED);
+		
+		return membersRepository.save(member);
+	}
+	
+	/**
+	 * データ削除
+	 * 
+	 * @param メンバID
+	 * @return デリートフラグを立てたデータを返す
+	 */
+	public MemberDto delete(String id) throws NotFoundException {
+		Optional<Member> member = membersRepository.findById(id);
+		
+		//取得したデータがDB上に存在しない場合Trueとなり例外をスロー
+		if (member.isEmpty()) {
+			throw new NotFoundException();
+		}
+		
+		Member mb = member.get();		
+		
+		//定数クラスのデリートフラグのフィールドを使用し、削除済みにする
+		mb.setDeleteFlg(Const.DELETE_FLG_DELETED);
+		
+		//デリートフラグを立てたデータに更新する
+		membersRepository.save(mb);
+		
+		return MemberDto.convertEntityToDto(mb);
 	}
 
 }

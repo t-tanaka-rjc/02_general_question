@@ -1,6 +1,7 @@
 package com.example.__general_question.dto;
 
 import com.example.__general_question.entity.Member;
+import com.example.__general_question.form.MemberForm;
 
 public class MemberDto {
 	/** ID */
@@ -8,11 +9,11 @@ public class MemberDto {
 	/** 名前 */
 	private String memberName;
 	/** 年齢 */
-	private String age;
+	private Integer age;
 	/** 住所 */
 	private String address;
 	/** 性別 */
-	private String sex;
+	private Integer sex;
 	/** mail */
 	private String mail;
 	/** 電話番号 */
@@ -25,8 +26,26 @@ public class MemberDto {
 	private String placeId;
 	/** 事業所名 */
 	private String placeName;
-	/** 登録日 */
-	private String regist;
+//	//delete_flg
+//	private Integer deleteFlg;
+//	
+//	/**
+//	 * delete_flgを取得
+//	 * 
+//	 * @return delete_flg
+//	 */
+//	public Integer getDeleteFlg() {
+//		return deleteFlg;
+//	}
+//	
+//	/**
+//	 * delete_flgを設定
+//	 * 
+//	 * @return delete_flg(0:削除対象外、1:削除対象)
+//	 */
+//	public void setDeleteFlg(Integer deleteFlg) {
+//		this.deleteFlg = deleteFlg;
+//	}
 
 	/**
 	 * IDを取得します。
@@ -60,14 +79,14 @@ public class MemberDto {
 	 * 年齢を取得します。
 	 * @return 年齢
 	 */
-	public String getAge() {
+	public Integer getAge() {
 	    return age;
 	}
 	/**
 	 * 年齢を設定します。
 	 * @param age 年齢
 	 */
-	public void setAge(String age) {
+	public void setAge(Integer age) {
 	    this.age = age;
 	}
 	/**
@@ -88,14 +107,14 @@ public class MemberDto {
 	 * 性別を取得します。
 	 * @return 性別
 	 */
-	public String getSex() {
+	public Integer getSex() {
 	    return sex;
 	}
 	/**
 	 * 性別を設定します。
 	 * @param sex 性別
 	 */
-	public void setSex(String sex) {
+	public void setSex(Integer sex) {
 	    this.sex = sex;
 	}
 	/**
@@ -182,19 +201,55 @@ public class MemberDto {
 	public void setPlaceName(String placeName) {
 	    this.placeName = placeName;
 	}
+
 	/**
-	 * 登録日を取得します。
-	 * @return 登録日
+	 * MemberFormをMemberDtoに変換する
+	 * 
+	 * @param form 変換元
+	 * @return MemberDto
 	 */
-	public String getRegist() {
-	    return regist;
+	public static final MemberDto convertFormToDto(MemberForm form) {
+		MemberDto memberDto = new MemberDto();
+		
+		memberDto.setMemberId(form.getMemberId());
+		memberDto.setMemberName(form.getMemberName());
+		memberDto.setAge(form.getAge());
+		memberDto.setAddress(form.getAddress());
+		memberDto.setSex(form.getSex());
+		memberDto.setMail(form.getMail());
+		memberDto.setTel(form.getTel());
+		memberDto.setPositionId(form.getPositionId());
+		memberDto.setPlaceId(form.getPlaceId());
+		//下記の登録日や更新日はDBが保存した瞬間に時刻を自動で刻んでくれるから
+		//登録時にセットする必要はない（CURRENT_TIMESTAMPが付与されているから）
+		//memberDto.setRegist(member.getRegist());
+		
+		return memberDto;
 	}
+	
 	/**
-	 * 登録日を設定します。
-	 * @param regist 登録日
+	 * MemberDtoをMember(Entity)に変換する
+	 * 
+	 * @param dto 変換元
+	 * @return Member
 	 */
-	public void setRegist(String regist) {
-	    this.regist = regist;
+	public static final Member convertDtoToEntity(MemberDto dto) {
+		Member member = new Member();
+		
+		member.setMemberId(dto.getMemberId());
+		member.setMemberName(dto.getMemberName());
+		member.setAge(dto.getAge());
+		member.setAddress(dto.getAddress());
+		member.setSex(dto.getSex());
+		member.setMail(dto.getMail());
+		member.setTel(dto.getTel());
+		member.setPositionId(dto.getPositionId());
+		member.setPlaceId(dto.getPlaceId());
+		//下記の登録日や更新日はDBが保存した瞬間に時刻を自動で刻んでくれるから
+		//登録時にセットする必要はない（CURRENT_TIMESTAMPが付与されているから）
+		//memberDto.setRegist(member.getRegist());
+		
+		return member;
 	}
 	
 	/**
@@ -231,8 +286,6 @@ public class MemberDto {
 		} else {
 			memberDto.setPlaceName("未所属");
 		}
-		
-		memberDto.setRegist(member.getRegist());
 		
 		return memberDto;
 	}

@@ -2,8 +2,6 @@ package com.example.__general_question.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,7 +24,10 @@ public class Member {
 
 	// ID
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//下記はID（主キー）の採番をDBに完全に任せるアノテーションなので
+	//ME00000037のような文字列を手動で登録する場合は不要
+	//手動で登録するのに付けていたら更新だと勘違いして例外が発生する
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "member_id")
 	private String memberId;
 	
@@ -36,11 +37,11 @@ public class Member {
 	
 	// 年齢
 	@Column(name = "age")
-	private String age;
+	private Integer age;
 	
 	//性別コード（0:男性、1:女性）
 	@Column(name = "sex_flg")
-	private String sex;
+	private Integer sex;
 	
 	//住所
 	@Column(name = "address")
@@ -74,10 +75,28 @@ public class Member {
 	@ManyToOne
 	@JoinColumn(name = "place_id", insertable = false, updatable = false)
 	private Place place;
+
+	//デリートフラグ
+	@Column(name = "delete_flg")
+	private Integer deleteFlg;
 	
-	//登録日
-	@Column(name = "regist_date")
-	private String regist;
+	/**
+	 * delete_flgを取得
+	 * 
+	 * @return delete_flg
+	 */
+	public Integer getDeleteFlg() {
+		return deleteFlg;
+	}
+	
+	/**
+	 * delete_flgを設定
+	 * 
+	 * @return delete_flg(0:削除対象外、1:削除対象)
+	 */
+	public void setDeleteFlg(Integer deleteFlg) {
+		this.deleteFlg = deleteFlg;
+	}
 	
 	/**
 	 * IDを取得します。
@@ -104,21 +123,21 @@ public class Member {
 	 * 名前を設定します。
 	 * @param name 名前
 	 */
-	public void setName(String memberName) {
+	public void setMemberName(String memberName) {
 	    this.memberName = memberName;
 	}
 	/**
 	 * 年齢を取得します。
 	 * @return 年齢
 	 */
-	public String getAge() {
+	public Integer getAge() {
 	    return age;
 	}
 	/**
 	 * 年齢を設定します。
 	 * @param age 年齢
 	 */
-	public void setAge(String age) {
+	public void setAge(Integer age) {
 	    this.age = age;
 	}
 	/**
@@ -139,14 +158,14 @@ public class Member {
 	 * 性別を取得します。
 	 * @return 性別
 	 */
-	public String getSex() {
+	public Integer getSex() {
 	    return sex;
 	}
 	/**
 	 * 性別を設定します。
 	 * @param sex 性別
 	 */
-	public void setSex(String sex) {
+	public void setSex(Integer sex) {
 	    this.sex = sex;
 	}
 	/**
@@ -232,19 +251,5 @@ public class Member {
 	 */
 	public void setPlace(Place place) {
 	    this.place = place;
-	}
-	/**
-	 * 登録日を取得します。
-	 * @return 登録日
-	 */
-	public String getRegist() {
-	    return regist;
-	}
-	/**
-	 * 登録日を設定します。
-	 * @param regist 登録日
-	 */
-	public void setRegist(String regist) {
-	    this.regist = regist;
 	}
 }

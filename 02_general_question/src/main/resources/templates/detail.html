@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<link th:href="@{/css/common.css}" rel="stylesheet">
+		<title>詳細</title>
+	</head>
+	<body>
+		<div id="wapper">
+			<div class="menu">
+				<a href="../">メニュー</a><br>
+				<a href="/list">メンバ一覧</a><br>
+			</div>
+			<div class="menu">
+				<h2>詳細画面</h2>
+			</div>
+			<table th:object="${member}">
+				<tr>
+					<th scope="col">社員ID</th>
+					<td th:text = "*{memberId}"></td>
+				</tr>
+					<th scope="col">氏名</th>
+					<td th:text = "*{memberName}"></td>
+				</tr>
+					<th scope="col">年齢</th>
+					<td th:text = "*{age}"></td>
+				</tr>
+					<th scope="col">性別</th>
+					<td th:text = "*{sex}"></td>
+				</tr>
+					<th scope="col">住所</th>
+					<td th:text = "*{address}"></td>
+				</tr>
+					<th scope="col">電話番号</th>
+					<td th:text = "*{tel}"></td>
+				</tr>
+					<th scope="col">メールアドレス</th>
+					<td th:text = "*{mail}"></td>
+				</tr>
+					<th scope="col">役職</th>
+					<td th:text = "*{positionName}"></td>
+				</tr>
+					<th scope="col">事業所</th>
+					<td th:text = "*{placeName}"></td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

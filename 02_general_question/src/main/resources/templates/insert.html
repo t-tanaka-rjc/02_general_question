@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<link th:href="@{/css/common.css}" rel="stylesheet">
+		<title>新規登録</title>
+	</head>
+	<body>
+		<div id="wapper">
+			<div class="menu">
+				<a th:href="@{../}">メニュー</a><br>
+			</div>
+			<div class="menu">
+				<h2>新規登録画面</h2>
+			</div>
+			<form th:action="@{/insertConf}" method="post" th:object="${member}" accept-charset="utf-8">
+				<table>
+					<tr th:classappend="${#fields.hasErrors('memberId')} ? 'error'">
+						<th>社員ID</th>
+						<td><input type="text" th:field="*{memberId}" required="required" maxlength="10" placeholder="半角英数字のみ"></td>
+						<td class="error" th:errors="*{memberId}"></td>
+					</tr>
+					<tr th:classappend="${#fields.hasErrors('memberName')} ? 'error'">
+						<th>氏名</th>
+						<td><input type="text" th:field="*{memberName}" required="required" maxlength="20"></td>
+						<td class="error" th:errors="*{memberName}"></td>
+					</tr>
+					<tr th:classappend="${#fields.hasErrors('age')} ? 'error'">
+						<th>年齢</th>
+						<td><input type="text" th:field="*{age}" required="required" maxlength="3" placeholder="半角数字のみ"></td>
+						<td class="error" th:errors="*{age}"></td> 
+					</tr>
+					<tr th:classappend="${#fields.hasErrors('sex')} ? 'error'">
+					    <th>性別</th>
+					    <td>
+					        <input type="radio" th:field="*{sex}" value="0">
+					        <label th:for="${#ids.prev('sex')}">男</label>
+
+					        <input type="radio" th:field="*{sex}" value="1">
+					        <label th:for="${#ids.prev('sex')}">女</label>
+					    </td>
+					    <td class="error" th:errors="*{sex}"></td>
+					</tr>
+					<tr th:classappend="${#fields.hasErrors('address')} ? 'error'">
+						<th>住所</th>
+						<td><input type="text" th:field="*{address}" required="required" maxlength="50"></td>
+						<td class="error" th:errors="*{address}"></td>
+					</tr>
+					<tr th:classappend="${#fields.hasErrors('tel')} ? 'error'">
+						<th>電話番号</th>
+						<td><input type="text" th:field="*{tel}" required="required" maxlength="11" placeholder="半角数字ハイフンなし"></td>
+						<td class="error" th:errors="*{tel}"></td>
+					</tr>
+					<tr th:classappend="${#fields.hasErrors('mail')} ? 'error'">
+						<th>メールアドレス</th>
+						<td><input type="text" th:field="*{mail}" required="required" maxlength="30" placeholder="半角英数字のみ"></td>
+						<td class="error" th:errors="*{mail}"></td>
+					</tr>
+					<tr>
+						<th>役職</th>
+						<td>
+							<select th:field="*{positionId}">
+								<option value="">未選択にする</option>
+								
+								<option th:each="position : ${positions}"
+								        th:value="${position.positionId}"
+									    th:text="${position.positionName}"></option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th>事業所</th>
+						<td>
+							<select th:field="*{placeId}">
+								<option value="">未選択にする</option>
+								
+								<option th:each="place : ${places}"
+								        th:value="${place.placeId}"
+									    th:text="${place.placeName}"></option>
+							</select>
+						</td>
+					</tr>
+				</table>
+				<div class="menu">
+					<button type="submit">登録</button>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>
