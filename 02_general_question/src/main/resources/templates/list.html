@@ -55,10 +55,7 @@
 						</td>
 
 						<td>
-						    <form method="post" th:action="@{/delete}" style="display:inline">
-						        <input type="hidden" name="id" th:value="*{memberId}" />
-						        <input type="submit" class="btn-delete" onclick="return confirmDeleteAlert()" value="削除" />
-						    </form>
+						    <a th:href="@{/delete/{id}(id=*{memberId})}" class="btn-link">削除</a>
 						</td>
 					</tr>
 				</tbody>
