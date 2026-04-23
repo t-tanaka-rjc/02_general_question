@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.__general_question.dto.MemberDto;
@@ -238,7 +239,7 @@ public class MembersController {
 			redirAttrs.addFlashAttribute("error", attributeMessageHelper.getPropertieMessage("dataMissingError"));
 
 			//リダイレクトは指定したURLでアクセスしなおすから、登録画面のメソッドが呼ばれる
-			return "redirect:/insert";
+			return "redirect:/update";
 		}
 		
 		return "updateConf";
@@ -272,14 +273,14 @@ public class MembersController {
 			
 			redirAttrs.addFlashAttribute("error", attributeMessageHelper.getPropertieMessage("dataMissingError"));
 
-			//リダイレクトは指定したURLでアクセスしなおすから、登録画面のメソッドが呼ばれる
-			return "redirect:/insert";
+			//リダイレクトは指定したURLでアクセスしなおすから、更新画面のメソッドが呼ばれる
+			return "redirect:/update";
 		}
 		
 		
 		
 		//登録処理の後に画面を表示する場合は、必ずリダイレクト
-		return "redirect:/insertComp";
+		return "redirect:/updateComp";
 	}
 	
 	/**
@@ -287,9 +288,73 @@ public class MembersController {
 	 * 
 	 * @return 登録完了画面を返す
 	 */
-//	@GetMapping("/insertComp")
-//	private String insertComp() {
-//		//登録処理メソッド内で、完了画面に表示するデータをもらっているからなにもしなくていい
-//		return "insertComp";
-//	}
+	@GetMapping("/updateComp")
+	private String updateComp() {
+		//登録処理メソッド内で、完了画面に表示するデータをもらっているからなにもしなくていい
+		return "updateComp";
+	}
+	
+	/**
+	 * 削除画面
+	 * 
+	 * @return　削除画面を返す 
+	 */
+	@GetMapping("/delete/{id}")
+	private String delete(@PathVariable(value = "id") String id, Model model,
+			RedirectAttributes redirAttrs) {
+		
+		MemberDto memberDto;
+		try {
+			memberDto = membersService.getById(id);
+			//下記は役職ID事業所IDに紐づく、役職名と事業所名を表示するため。Dtoのフィールドに設定
+			memberDto.setPositionName(positionsService.getPositionName(memberDto.getPositionId()));
+			memberDto.setPlaceName(placesService.getPlaceName(memberDto.getPlaceId()));
+		} catch (NotFoundException e) {
+			redirAttrs.addFlashAttribute("error", attributeMessageHelper.getPropertieMessage("targetInvalidError"));
+			return "redirect:/";
+		}
+		
+		model.addAttribute("member", memberDto);
+		return "delete";
+	}
+	
+	/**
+	 * 削除処理
+	 * 
+	 * 
+	 */
+	@PostMapping("/deleteComp")
+	private String remove(@RequestParam("memberId") String id, RedirectAttributes redirAttrs) {
+		
+		try {
+			// 削除処理を行う
+			MemberDto dto =membersService.delete(id);
+			// リダイレクト先で削除が成功した旨のメッセージを表示する
+			//デリートフラグが立っているデータがDtoクラスとして返ってくる
+			//下記は役職ID事業所IDに紐づく、役職名と事業所名を表示するため。Dtoのフィールドに設定
+			dto.setPositionName(positionsService.getPositionName(dto.getPositionId()));
+			dto.setPlaceName(placesService.getPlaceName(dto.getPlaceId()));
+			//リダイレクト先にデリートフラグを立てたデータの情報を渡す
+			redirAttrs.addFlashAttribute("member", dto);
+
+		} catch (NotFoundException e) {
+
+			//リダイレクト先で削除が失敗した旨のメッセージを表示する 
+			redirAttrs.addFlashAttribute("error", attributeMessageHelper.getPropertieMessage("deleteError"));
+
+		}
+		
+		return "redirect:/deleteComp";
+	}
+	
+	/**
+	 * 削除完了画面
+	 * 
+	 * @return 削除完了画面を返す
+	 */
+	@GetMapping("/deleteComp")
+	private String deleteComp() {
+		//削除処理メソッド内で、完了画面に表示するデータをもらっているからなにもしなくていい
+		return "deleteComp";
+	}
 }

@@ -76,6 +76,28 @@ public class Member {
 	@JoinColumn(name = "place_id", insertable = false, updatable = false)
 	private Place place;
 
+	//デリートフラグ
+	@Column(name = "delete_flg")
+	private Integer deleteFlg;
+	
+	/**
+	 * delete_flgを取得
+	 * 
+	 * @return delete_flg
+	 */
+	public Integer getDeleteFlg() {
+		return deleteFlg;
+	}
+	
+	/**
+	 * delete_flgを設定
+	 * 
+	 * @return delete_flg(0:削除対象外、1:削除対象)
+	 */
+	public void setDeleteFlg(Integer deleteFlg) {
+		this.deleteFlg = deleteFlg;
+	}
+	
 	/**
 	 * IDを取得します。
 	 * @return ID

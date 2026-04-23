@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.__general_question.config.Const;
 import com.example.__general_question.dto.MemberDto;
 import com.example.__general_question.entity.Member;
 import com.example.__general_question.repository.MembersRepository;
@@ -57,7 +58,7 @@ public class MembersService {
 	}
 
 	/**
-	 * データをDBに登録
+	 * データをDBに登録・登録
 	 * 
 	 * @param dto FormクラスからDtoクラスに変換された入力値
 	 * @return 
@@ -66,7 +67,34 @@ public class MembersService {
 
 		Member member = MemberDto.convertDtoToEntity(dto);
 		
+		member.setDeleteFlg(Const.DELETE_FLG_NOT_DELETED);
+		
 		return membersRepository.save(member);
+	}
+	
+	/**
+	 * データ削除
+	 * 
+	 * @param メンバID
+	 * @return デリートフラグを立てたデータを返す
+	 */
+	public MemberDto delete(String id) throws NotFoundException {
+		Optional<Member> member = membersRepository.findById(id);
+		
+		//取得したデータがDB上に存在しない場合Trueとなり例外をスロー
+		if (member.isEmpty()) {
+			throw new NotFoundException();
+		}
+		
+		Member mb = member.get();		
+		
+		//定数クラスのデリートフラグのフィールドを使用し、削除済みにする
+		mb.setDeleteFlg(Const.DELETE_FLG_DELETED);
+		
+		//デリートフラグを立てたデータに更新する
+		membersRepository.save(mb);
+		
+		return MemberDto.convertEntityToDto(mb);
 	}
 
 }
